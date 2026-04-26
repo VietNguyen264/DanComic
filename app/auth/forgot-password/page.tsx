@@ -43,15 +43,15 @@ export default function ForgotPasswordPage() {
   const steps = [
     {
       title: "Xác nhận Email",
-      description: "Nhập email của bạn",
+      content: "Nhập email của bạn",
     },
     {
       title: "Đặt lại Mật khẩu",
-      description: "Nhập mật khẩu mới",
+      content: "Nhập mật khẩu mới",
     },
     {
       title: "Hoàn tất",
-      description: "Mật khẩu đã được cập nhật",
+      content: "Mật khẩu đã được cập nhật",
     },
   ];
 
@@ -64,9 +64,8 @@ export default function ForgotPasswordPage() {
         <Steps 
           current={step} 
           items={steps.map(s => ({
-            ...s,
-            title: <span className="text-gray-100 font-medium">{s.title}</span>,
-            content: <span className="text-gray-200 text-xs">{s.description}</span>
+            title: s.title,
+            content: s.content,
           }))} 
           className="mb-8 custom-steps" 
         />

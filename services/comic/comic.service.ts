@@ -31,22 +31,22 @@ export type UpdateComicType = {
 const comicService = {
 
   getAllComics: async (): Promise<ComicType[]> => {
-    const response = await axiosInstance.get("comics");
+    const response = await axiosInstance.get("comic");
     return response.data;
   },
 
   addComic: async (comicPayload: CreateComicType): Promise<ComicType> => {
-    const response = await axiosInstance.post("comics", comicPayload);
+    const response = await axiosInstance.post("comic", comicPayload);
     return response.data;
   },
 
   updateComic: async (id: string, comicPayload: UpdateComicType): Promise<ComicType> => {
-    const response = await axiosInstance.put(`comics/${id}`, comicPayload);
+    const response = await axiosInstance.put(`comic/${id}`, comicPayload);
     return response.data;
   },
 
   deleteComic: async (id: string): Promise<void> => {
-    await axiosInstance.delete(`comics/${id}`);
+    await axiosInstance.delete(`comic/${id}`);
   },
 };
 

@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Button } from "antd";
 import { StarFilled, EyeOutlined, HeartOutlined } from "@ant-design/icons";
+import { useRouter } from "next/navigation";
 
 interface BookCardProps {
   id: number;
@@ -30,6 +31,7 @@ export default function BookCard({
   type,
 }: BookCardProps) {
   const isDark = type === "truyen";
+  const router = useRouter();
 
   return (
     <div
@@ -112,12 +114,14 @@ export default function BookCard({
             </span>
           </div>
 
-          <Link
-            href={`/${type}/${id}`}
-            className="inline-block px-4 py-2 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 transition-colors"
+          <Button
+            type="primary"
+            danger
+            onClick={() => router.push(`/${type}/${id}`)}
+            className="w-full font-semibold"
           >
             {type === "truyen" ? "ĐỌC TRUYỆN" : "XEM SẢN PHẨM"}
-          </Link>
+          </Button>
         </div>
       </div>
     </div>

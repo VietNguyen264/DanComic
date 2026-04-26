@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, Space, message, Card } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import comicService, { ComicType } from "@/services/comic/comic.service";
 import { useAuth } from "@/context/auth";
 
@@ -105,8 +106,27 @@ export default function AdminComicPage() {
 
   const columns = [
     {
+      title: "Ảnh bìa",
+      dataIndex: "comicCover",
+      key: "comicCover",
+      width: 80,
+      render: (text: string) => (
+        <div className="relative w-16 h-24">
+          <Image
+            src={text}
+            alt="Comic cover"
+            fill
+            className="object-cover rounded"
+            onError={(e) => {
+              e.currentTarget.src = "https://via.placeholder.com/80x120?text=No+Image";
+            }}
+          />
+        </div>
+      ),
+    },
+    {
       title: "Tên truyện tranh",
-      dataIndex: "comicName", // Kiểm tra xem MockAPI của bạn trả về 'comicName' hay 'bookName'
+      dataIndex: "comicName",
       key: "comicName",
       width: 200,
     },
