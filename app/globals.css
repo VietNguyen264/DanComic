@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+/* Ant Design Override for DanComic */
+.ant-tabs-tab {
+  color: inherit;
+  font-weight: 500;
+}
+
+.ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.ant-input,
+.ant-input-number,
+.ant-select {
+  background-color: inherit;
+  border-color: inherit;
+  color: inherit;
+}
+
+/* Smooth transitions */
+* {
+  @apply transition-colors duration-300;
+}
+
+/* Focus styles */
+button:focus,
+a:focus {
+  outline: 2px solid #dc2626;
+  outline-offset: 2px;
+}
+
+/* Responsive images */
+img {
+  @apply max-w-full h-auto;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-bold;
+}
+
+/* Links */
+a {
+  @apply text-red-600 hover:text-red-700;
+}
+
