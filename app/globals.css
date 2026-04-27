@@ -30,8 +30,12 @@
 
 /* Ant Design Override for DanComic */
 .ant-tabs-tab {
-  color: inherit;
+  color: #ffffff !important;
   font-weight: 500;
+}
+
+.ant-tabs-tab-active {
+  color: #3b82f6 !important;
 }
 
 .ant-tabs-nav {
