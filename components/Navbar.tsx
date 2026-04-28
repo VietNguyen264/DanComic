@@ -81,7 +81,7 @@ export default function Navbar() {
                 href="/admin"
                 className="text-yellow-500 text-sm font-semibold hover:text-yellow-400 transition-colors"
               >
-                👑 Admin
+                 ADMIN
               </Link>
             )}
 
@@ -138,7 +138,7 @@ export default function Navbar() {
                   href="/admin"
                   className="block hover:text-yellow-400 transition-colors py-2 font-semibold"
                 >
-                  👑 Dashboard Admin
+                   Dashboard Admin
                 </Link>
                 <button
                   onClick={logout}

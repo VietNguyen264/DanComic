@@ -41,7 +41,7 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="mb-8 flex justify-between items-start">
           <div>
-            <h1 className="text-4xl font-bold text-white mb-2">👑 Admin Dashboard</h1>
+            <h1 className="text-4xl font-bold text-white mb-2">Admin Dashboard</h1>
             <p className="text-gray-400">Quản lý sách, truyện và nội dung DanComic</p>
           </div>
           <Button
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
               }
             >
               <p className="text-gray-400 mb-6">
-                Thêm, sửa, xóa thông tin các cuốn sách trong thư viện
+                Tùy chỉnh thông tin loại sách
               </p>
               <Link href="/admin/sach">
                 <Button
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
               }
             >
               <p className="text-gray-400 mb-6">
-                Thêm, sửa, xóa thông tin các tác phẩm truyện tranh online
+                Tùy chỉnh thông tin truyện tranh online
               </p>
               <Link href="/admin/truyen">
                 <Button

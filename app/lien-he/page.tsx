@@ -29,7 +29,7 @@ export default function LienHePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-2">Liên Hệ Với Chúng Tôi</h1>
           <p className="text-lg text-green-100">
-            Có câu hỏi hoặc ý kiến? Chúng tôi rất muốn nghe từ bạn
+            Có câu hỏi hoặc ý kiến? Vấn đề của bạn với trang web sẽ giúp chúng tôi hoàn thiện hơn.
           </p>
         </div>
       </div>

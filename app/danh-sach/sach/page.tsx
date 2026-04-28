@@ -56,7 +56,7 @@ export default function SachPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-2">Thư Viện Sách</h1>
           <p className="text-lg text-blue-100">
-            Khám phá hàng ngàn cuốn sách truyện chất lượng cao từ các tác giả nổi tiếng
+            Khám phá vô vàn sách truyện - tiểu thuyết hay và nổi tiếng
           </p>
         </div>
       </div>

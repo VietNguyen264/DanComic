@@ -116,7 +116,7 @@ export default function Home() {
     },
     {
       key: "books",
-      label: "SÁCH",
+      label: "SÁCH BÁN CHẠY",
       children: loading ? (
         <div className="flex justify-center py-12">
           <Spin size="large" />
@@ -135,7 +135,7 @@ export default function Home() {
       {/* Admin Quick Access Bar */}
       {isAdmin && (
         <div className="bg-yellow-500 p-2 text-center flex justify-center items-center gap-4">
-          <span className="font-bold text-gray-900">🔔 Bạn đang đăng nhập với quyền ADMIN</span>
+          <span className="font-bold text-gray-900">Đang đăng nhập với quyền ADMIN</span>
           <Link href="/admin">
             <Button type="primary" size="small" icon={<SettingOutlined />} className="bg-gray-900 border-none">
               Vào Dashboard

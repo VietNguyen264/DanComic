@@ -11,7 +11,7 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-bold text-red-600 mb-4">DanComic</h3>
             <p className="text-gray-300">
-              Nền tảng đọc truyện tranh online và mua bán sách truyện chất lượng cao.
+              Nền tảng đọc truyện tranh online và mua bán sách truyện uy tín, tin cậy.
             </p>
           </div>
 
