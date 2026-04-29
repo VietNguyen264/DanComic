@@ -16,6 +16,7 @@ interface BookCardProps {
   views: number;
   followers: number;
   type: "truyen" | "sach";
+  bookPrice?: string | number;
 }
 
 export default function BookCard({
@@ -29,6 +30,7 @@ export default function BookCard({
   views,
   followers,
   type,
+  bookPrice,
 }: BookCardProps) {
   const isDark = type === "truyen";
   const router = useRouter();
@@ -40,7 +42,7 @@ export default function BookCard({
       }`}
     >
       {/* Cover Image */}
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         <Image
           src={bookCover}
           alt={bookName}
@@ -99,6 +101,13 @@ export default function BookCard({
 
         {/* Stats & Button */}
         <div className="space-y-3">
+          {/* Price for books */}
+          {type === "sach" && bookPrice && (
+            <div className={`text-lg font-bold ${isDark ? "text-red-400" : "text-red-600"}`}>
+              {typeof bookPrice === "string" ? bookPrice : `${bookPrice.toLocaleString("vi-VN")} ₫`}
+            </div>
+          )}
+          
           <div className="flex items-center gap-4 text-sm">
             <span className={isDark ? "text-yellow-400" : "text-yellow-500"}>
               <StarFilled className="mr-1" />

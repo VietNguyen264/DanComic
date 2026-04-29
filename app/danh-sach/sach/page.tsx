@@ -1,53 +1,66 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BookGrid from "@/components/BookGrid";
-import { Select, Row, Col } from "antd";
-
-const allBooks = [
-  {
-    id: 1,
-    bookName: "Mèo Mập Béo Bự",
-    bookCover: "https://images.unsplash.com/photo-1507842217343-583b8c8a8451?w=300&h=400&fit=crop",
-    chapter: 398,
-    genres: ["Drama", "Học Đường"],
-    description: "Một người dùng có khả năng bị ảnh hưởng bên ấn định giáo bên trong cơ thể của một con mèo...",
-    rating: 4,
-    views: 26632023,
-    followers: 27635,
-  },
-  {
-    id: 2,
-    bookName: "Đại Quân Gia Là Ma Hoàng",
-    bookCover: "https://images.unsplash.com/photo-1490079002776-d70f75dbd0b6?w=300&h=400&fit=crop",
-    chapter: 845,
-    genres: ["Hành Động", "Phiêu Lưu"],
-    description: "Zhuo Yifan là một hoàng đế ma thuật hay có thể gọi là quý hoàng ông con pháp cơn bị học trò của mình phần...",
-    rating: 4,
-    views: 18047601,
-    followers: 25146,
-  },
-  {
-    id: 11,
-    bookName: "Hoàn Thành Tiểu Thuyết Lãng Mạn",
-    bookCover: "https://images.unsplash.com/photo-1516979187457-635ffe35ebdb?w=300&h=400&fit=crop",
-    chapter: 456,
-    genres: ["Lãng Mạn", "Hài Hước"],
-    description: "Một câu chuyện tình yêu đầy cảm xúc và tình cảm...",
-    rating: 5,
-    views: 5432100,
-    followers: 12345,
-  },
-];
+import { Select, Row, Col, Spin, Button } from "antd";
+import { DownloadOutlined } from "@ant-design/icons";
+import bookService from "@/services/book/book.service";
 
 export default function SachPage() {
+  const [books, setBooks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [displayCount, setDisplayCount] = useState(12);
+
+  // Fetch books từ API
+  const fetchBooks = async () => {
+    try {
+      setLoading(true);
+      const booksData = await bookService.getAllBooks();
+      
+      // Map dữ liệu từ API
+      const mappedBooks = (booksData || []).map((book: any) => ({
+        id: book.bookId || book.id,
+        bookName: book.bookName,
+        bookCover: book.bookCover,
+        chapter: book.chapter || 0,
+        genres: book.bookGenre ? [book.bookGenre] : [],
+        description: book.bookDescription,
+        rating: book.rating || 4,
+        views: book.views || 0,
+        followers: book.followers || 0,
+        bookPrice: book.bookPrice,
+      }));
+      
+      setBooks(mappedBooks);
+    } catch (error) {
+      console.error("Failed to fetch books:", error);
+      setBooks([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load books on mount
+  useEffect(() => {
+    fetchBooks();
+  }, []);
 
   const filteredBooks = selectedGenre
-    ? allBooks.filter((book) => book.genres.includes(selectedGenre))
-    : allBooks;
+    ? books.filter((book) => book.genres.includes(selectedGenre))
+    : books;
 
-  const genres = ["Drama", "Học Đường", "Hành Động", "Phiêu Lưu", "Lãng Mạn", "Hài Hước"];
+  // Display only displayCount items
+  const displayedBooks = filteredBooks.slice(0, displayCount);
+
+  const handleLoadMore = () => {
+    setDisplayCount((prev) => prev + 6);
+  };
+
+  // Collect all unique genres from books
+  const genres = Array.from(
+    new Set(books.flatMap((book: any) => book.genres))
+  ).sort() as string[];
 
   return (
     <div className="bg-white min-h-screen">
@@ -93,11 +106,35 @@ export default function SachPage() {
         </Row>
 
         {/* Books Grid */}
-        <BookGrid
-          books={filteredBooks}
-          type="sach"
-          title={`Tìm thấy ${filteredBooks.length} cuốn sách`}
-        />
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Spin size="large" />
+          </div>
+        ) : filteredBooks.length > 0 ? (
+          <>
+            <BookGrid
+              books={displayedBooks}
+              type="sach"
+              title={`Hiển thị ${displayedBooks.length} / ${filteredBooks.length} cuốn sách`}
+            />
+            
+            {displayCount < filteredBooks.length && (
+              <div className="flex justify-center py-8">
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<DownloadOutlined />}
+                  onClick={handleLoadMore}
+                  className="bg-blue-600 hover:bg-blue-700 border-blue-600 hover:border-blue-700"
+                >
+                  Xem Thêm ({filteredBooks.length - displayCount} cuốn còn lại)
+                </Button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center text-gray-400 py-12">Không có sách nào</div>
+        )}
       </div>
     </div>
   );

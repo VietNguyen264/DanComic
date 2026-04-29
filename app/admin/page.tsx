@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, Row, Col, Button, Statistic, message } from "antd";
 import {
@@ -12,10 +12,14 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "@/context/auth";
+import bookService from "@/services/book/book.service";
+import comicService from "@/services/comic/comic.service";
 
 export default function AdminDashboard() {
   const router = useRouter();
   const { isAdmin, logout, isLoaded } = useAuth();
+  const [bookCount, setBookCount] = useState(0);
+  const [comicCount, setComicCount] = useState(0);
 
   // Kiểm tra quyền admin
   useEffect(() => {
@@ -24,6 +28,29 @@ export default function AdminDashboard() {
       router.push("/");
     }
   }, [isAdmin, isLoaded, router]);
+
+  // Fetch statistics từ API
+  const fetchStats = async () => {
+    try {
+      const [booksData, comicsData] = await Promise.all([
+        bookService.getAllBooks(),
+        comicService.getAllComics(),
+      ]);
+      setBookCount((booksData || []).length);
+      setComicCount((comicsData || []).length);
+    } catch (error) {
+      console.error("Failed to fetch stats:", error);
+    }
+  };
+
+  // Load stats on mount and auto-refresh every 5 seconds
+  useEffect(() => {
+    if (isAdmin) {
+      fetchStats();
+      const interval = setInterval(fetchStats, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [isAdmin]);
 
   if (!isLoaded || !isAdmin) {
     return null;
@@ -60,7 +87,7 @@ export default function AdminDashboard() {
             <Card className="bg-gray-800 border-gray-700">
               <Statistic
                 title={<span className="text-gray-300">Tổng Sách</span>}
-                value={124}
+                value={bookCount}
                 prefix={<BookOutlined className="text-blue-500" />}
                 styles={{ content: { color: "#3b82f6" } }}
               />
@@ -70,7 +97,7 @@ export default function AdminDashboard() {
             <Card className="bg-gray-800 border-gray-700">
               <Statistic
                 title={<span className="text-gray-300">Tổng Truyện</span>}
-                value={87}
+                value={comicCount}
                 prefix={<FileTextOutlined className="text-green-500" />}
                 styles={{ content: { color: "#10b981" } }}
               />

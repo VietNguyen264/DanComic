@@ -13,6 +13,7 @@ interface BookGridProps {
     rating: number;
     views: number;
     followers: number;
+    bookPrice?: string | number;
   }>;
   type: "truyen" | "sach";
   title?: string;

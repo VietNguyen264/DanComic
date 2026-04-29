@@ -1,75 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BookGrid from "@/components/BookGrid";
-import { Select, Row, Col } from "antd";
-
-const allComics = [
-  {
-    id: 3,
-    bookName: "Nano Ma Thần",
-    bookCover: "https://images.unsplash.com/photo-1544716278-ca5e3af4abd8?w=300&h=400&fit=crop",
-    chapter: 309,
-    genres: ["Manhwa", "Võ Thuật"],
-    description: "(Nano Machine) Tân bình một trong làng truyện tranh Võ hiệp Hàn Quốc, trình làng một được 3 tuần...",
-    rating: 4,
-    views: 12140824,
-    followers: 30812,
-  },
-  {
-    id: 4,
-    bookName: "Kỵ Sĩ Bá Nhất Thế Giới",
-    bookCover: "https://images.unsplash.com/photo-1516979187457-635ffe35ebdb?w=300&h=400&fit=crop",
-    chapter: 222,
-    genres: ["Hành Động", "Hải Hước"],
-    description: "Kim Suho, vốn là một kỵ sĩ xây dựng, đã trở thành Quỳ tộc trong một cuộc tiêu thuyết...",
-    rating: 5,
-    views: 11225000,
-    followers: 35652,
-  },
-  {
-    id: 5,
-    bookName: "Hoán Đổi Diều Kì",
-    bookCover: "https://images.unsplash.com/photo-1517457373614-b7152f800fd1?w=300&h=400&fit=crop",
-    chapter: 603,
-    genres: ["Drama", "Học Đường"],
-    description: "Park Hyung Suk, béo và xấu xí, luôn bị lời ra làm trò cười và bất nạt ở trường...",
-    rating: 5,
-    views: 8915270,
-    followers: 15302,
-  },
-  {
-    id: 6,
-    bookName: "Ta Trời Sinh Đã Là Nhân Vật Phiên Diện",
-    bookCover: "https://images.unsplash.com/photo-1511185612332-f56ec3579340?w=300&h=400&fit=crop",
-    chapter: 337,
-    genres: ["Manhwa", "Võ Thuật"],
-    description: "Có Trương Ca xuyên không trở thành nhân vật phiên diện, làm thiều chủ một trương sinh thế giả...",
-    rating: 4,
-    views: 8284874,
-    followers: 20108,
-  },
-  {
-    id: 12,
-    bookName: "Kỵ Sĩ Thời Nay",
-    bookCover: "https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=300&h=400&fit=crop",
-    chapter: 128,
-    genres: ["Hành Động", "Manga"],
-    description: "Một tác phẩm hành động đầy kịch tính với tuyệt chiêu đặc sắc...",
-    rating: 4,
-    views: 4321000,
-    followers: 8765,
-  },
-];
+import { Select, Row, Col, Spin, Button } from "antd";
+import { DownloadOutlined } from "@ant-design/icons";
+import comicService from "@/services/comic/comic.service";
 
 export default function TruyenPage() {
+  const [comics, setComics] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [displayCount, setDisplayCount] = useState(12);
+
+  // Fetch comics từ API
+  const fetchComics = async () => {
+    try {
+      setLoading(true);
+      const comicsData = await comicService.getAllComics();
+      
+      // Map dữ liệu từ API
+      const mappedComics = (comicsData || []).map((comic: any) => ({
+        id: comic.comicId || comic.id,
+        bookName: comic.comicName,
+        bookCover: comic.comicCover,
+        chapter: comic.chapter || 0,
+        genres: comic.comicGenre ? [comic.comicGenre] : [],
+        description: comic.comicDescription,
+        rating: comic.rating || 4,
+        views: comic.views || 0,
+        followers: comic.followers || 0,
+      }));
+      
+      setComics(mappedComics);
+    } catch (error) {
+      console.error("Failed to fetch comics:", error);
+      setComics([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load comics on mount
+  useEffect(() => {
+    fetchComics();
+  }, []);
 
   const filteredComics = selectedGenre
-    ? allComics.filter((comic) => comic.genres.includes(selectedGenre))
-    : allComics;
+    ? comics.filter((comic) => comic.genres.includes(selectedGenre))
+    : comics;
 
-  const genres = ["Manhwa", "Manga", "Võ Thuật", "Hành Động", "Drama", "Học Đường", "Hài Hước"];
+  // Display only displayCount items
+  const displayedComics = filteredComics.slice(0, displayCount);
+
+  const handleLoadMore = () => {
+    setDisplayCount((prev) => prev + 6);
+  };
+
+  // Collect all unique genres from comics
+  const genres = Array.from(
+    new Set(comics.flatMap((comic: any) => comic.genres))
+  ).sort() as string[];
 
   return (
     <div className="bg-gray-900 min-h-screen">
@@ -115,11 +105,35 @@ export default function TruyenPage() {
         </Row>
 
         {/* Comics Grid */}
-        <BookGrid
-          books={filteredComics}
-          type="truyen"
-          title={`Tìm thấy ${filteredComics.length} truyện tranh`}
-        />
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Spin size="large" />
+          </div>
+        ) : filteredComics.length > 0 ? (
+          <>
+            <BookGrid
+              books={displayedComics}
+              type="truyen"
+              title={`Hiển thị ${displayedComics.length} / ${filteredComics.length} truyện tranh`}
+            />
+            
+            {displayCount < filteredComics.length && (
+              <div className="flex justify-center py-8">
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<DownloadOutlined />}
+                  onClick={handleLoadMore}
+                  className="bg-purple-600 hover:bg-purple-700 border-purple-600 hover:border-purple-700"
+                >
+                  Xem Thêm ({filteredComics.length - displayCount} truyện còn lại)
+                </Button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center text-gray-400 py-12">Không có truyện tranh nào</div>
+        )}
       </div>
     </div>
   );

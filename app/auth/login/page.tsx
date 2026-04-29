@@ -7,30 +7,47 @@ import { useRouter } from "next/navigation";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { useAuth } from "@/context/auth";
 
+interface LoginValues {
+  email: string;
+  password: string;
+  remember?: boolean;
+}
+
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const router = useRouter();
   const { setIsAdmin } = useAuth();
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: LoginValues) => {
     setLoading(true);
     try {
-      // Simulate API call
-      console.log("Login attempt:", values);
+      // Call secure API endpoint
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
+      });
 
-      // Kiểm tra thông tin Admin duy nhất
-      if (values.email === "admin@dancomic.com" && values.password === "admin123") {
-        setIsAdmin(true);
-        message.success("Đăng nhập Admin thành công!");
-        router.push("/admin");
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setIsAdmin(data.isAdmin);
+        message.success(data.message);
+        // Redirect based on role
+        router.push(data.isAdmin ? '/admin' : '/');
       } else {
-        setIsAdmin(false);
-        message.success("Đăng nhập thành công!");
-        router.push("/");
+        message.error(data.message || 'Đăng nhập thất bại!');
+        form.resetFields(['password']);
       }
     } catch (error) {
-      message.error("Đăng nhập thất bại!");
+      console.error('Login error:', error);
+      message.error('Lỗi kết nối. Vui lòng thử lại!');
     } finally {
       setLoading(false);
     }
@@ -52,6 +69,10 @@ export default function LoginPage() {
             name="email"
             rules={[
               { required: true, message: "Vui lòng nhập email hoặc số điện thoại" },
+              {
+                pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Email không hợp lệ",
+              },
             ]}
           >
             <Input
@@ -59,22 +80,27 @@ export default function LoginPage() {
               placeholder="Email hoặc số điện thoại"
               size="large"
               className="bg-gray-700 border-gray-600 text-white"
+              disabled={loading}
             />
           </Form.Item>
 
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập mật khẩu" },
+              { min: 4, message: "Mật khẩu phải ít nhất 4 ký tự" },
+            ]}
           >
             <Input.Password
               prefix={<LockOutlined />}
               placeholder="Mật khẩu"
               size="large"
               className="bg-gray-700 border-gray-600 text-white"
+              disabled={loading}
             />
           </Form.Item>
 
-          <Form.Item name="remember" valuePropName="checked">
+          <Form.Item name="remember" valuePropName="checked" initialValue={false}>
             <Checkbox className="text-gray-300">Nhớ tôi</Checkbox>
           </Form.Item>
 

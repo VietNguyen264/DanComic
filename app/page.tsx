@@ -38,6 +38,7 @@ export default function Home() {
         rating: book.rating || 4,
         views: book.views || 0,
         followers: book.followers || 0,
+        bookPrice: book.bookPrice,
       }));
 
       const mappedComics = (comicsData || []).map((comic: any) => ({
