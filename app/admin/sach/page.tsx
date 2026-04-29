@@ -255,6 +255,12 @@ export default function AdminBookPage() {
               <Input.TextArea
                 placeholder="Nhập mô tả chi tiết về sách"
                 rows={4}
+                style={{
+                  wordWrap: "break-word",
+                  whiteSpace: "pre-wrap",
+                  overflowWrap: "break-word",
+                }}
+                className="break-words"
               />
             </Form.Item>
 

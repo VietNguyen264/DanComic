@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import BookCard from "./BookCard";
-import { Button } from "antd";
-import { ArrowRightOutlined } from "@ant-design/icons";
 
 interface PaginatedBookGridProps {
   books: Array<{
@@ -35,12 +33,23 @@ export default function PaginatedBookGrid({
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentBooks = books.slice(startIndex, endIndex);
-  const hasMore = endIndex < books.length;
+  const totalPages = Math.ceil(books.length / itemsPerPage);
+  const hasMore = currentPage < totalPages - 1;
 
-  const handleViewMore = () => {
-    setCurrentPage(currentPage + 1);
-    // Scroll to top of this section
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const handlePageClick = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   return (
@@ -64,21 +73,49 @@ export default function PaginatedBookGrid({
           ))}
         </div>
 
-        {/* View More Button */}
-        {hasMore && (
-          <div className="flex justify-center mt-8">
-            <Button
-              type="primary"
-              size="large"
-              icon={<ArrowRightOutlined />}
-              onClick={handleViewMore}
-              className="bg-red-600 border-none hover:bg-red-700"
-            >
-              Xem Thêm
-            </Button>
+        {/* Pagination Buttons */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-8">
+            {/* Previous Button */}
+            {currentPage > 0 && (
+              <button
+                onClick={handlePrevious}
+                className="px-3 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
+              >
+                ←
+              </button>
+            )}
+
+            {/* Page Numbers */}
+            <div className="flex gap-1">
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handlePageClick(index)}
+                  className={`w-10 h-10 rounded flex items-center justify-center font-medium transition-colors ${
+                    index === currentPage
+                      ? "bg-red-600 text-white"
+                      : isDark
+                      ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+
+            {/* Next Button */}
+            {currentPage < totalPages - 1 && (
+              <button
+                onClick={handleNext}
+                className="px-3 py-2 rounded bg-red-600 text-white hover:bg-red-700 transition-colors"
+              >
+                →
+              </button>
+            )}
           </div>
         )}
-
         {/* Pagination Info */}
         {books.length > 0 && (
           <div className={`text-center mt-4 ${isDark ? "text-gray-400" : "text-gray-600"}`}>

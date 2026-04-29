@@ -150,6 +150,12 @@ export default function AdminComicPage() {
       ellipsis: true,
     },
     {
+      title: "Số chương",
+      dataIndex: "chapter",
+      key: "chapter",
+      width: 100,
+    },
+    {
       title: "Hành động",
       key: "action",
       width: 120,
@@ -249,6 +255,14 @@ export default function AdminComicPage() {
             </Form.Item>
 
             <Form.Item
+              name="chapter"
+              label="Số chương"
+              rules={[{ required: true, message: "Vui lòng nhập số chương" }]}
+            >
+              <Input type="number" placeholder="Nhập số chương hiện có" />
+            </Form.Item>
+
+            <Form.Item
               name="comicDescription"
               label="Mô tả"
               rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
@@ -256,6 +270,12 @@ export default function AdminComicPage() {
               <Input.TextArea
                 placeholder="Nhập mô tả chi tiết về truyện tranh"
                 rows={4}
+                style={{
+                  wordWrap: "break-word",
+                  whiteSpace: "pre-wrap",
+                  overflowWrap: "break-word",
+                }}
+                className="break-words"
               />
             </Form.Item>
 

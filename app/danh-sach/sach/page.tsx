@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import BookGrid from "@/components/BookGrid";
+import ScrollToTop from "@/components/ScrollToTop";
 import { Select, Row, Col, Spin, Button } from "antd";
-import { DownloadOutlined } from "@ant-design/icons";
+import { DownloadOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import bookService from "@/services/book/book.service";
 
 export default function SachPage() {
@@ -55,6 +56,10 @@ export default function SachPage() {
 
   const handleLoadMore = () => {
     setDisplayCount((prev) => prev + 6);
+  };
+
+  const handleShowLess = () => {
+    setDisplayCount(12);
   };
 
   // Collect all unique genres from books
@@ -119,7 +124,17 @@ export default function SachPage() {
             />
             
             {displayCount < filteredBooks.length && (
-              <div className="flex justify-center py-8">
+              <div className="flex justify-center gap-4 py-8">
+                {displayCount > 12 && (
+                  <Button
+                    size="large"
+                    icon={<ArrowUpOutlined />}
+                    onClick={handleShowLess}
+                    className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                  >
+                    Trở về
+                  </Button>
+                )}
                 <Button
                   type="primary"
                   size="large"
@@ -136,6 +151,8 @@ export default function SachPage() {
           <div className="text-center text-gray-400 py-12">Không có sách nào</div>
         )}
       </div>
+
+      <ScrollToTop />
     </div>
   );
 }
