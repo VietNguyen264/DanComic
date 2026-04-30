@@ -3,15 +3,16 @@
 import { useState, useEffect } from "react";
 import BookGrid from "@/components/BookGrid";
 import ScrollToTop from "@/components/ScrollToTop";
-import { Select, Row, Col, Spin, Button } from "antd";
-import { DownloadOutlined, ArrowUpOutlined } from "@ant-design/icons";
+import { Select, Row, Col, Spin } from "antd";
 import bookService from "@/services/book/book.service";
+
+const ITEMS_PER_PAGE = 12;
 
 export default function SachPage() {
   const [books, setBooks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
-  const [displayCount, setDisplayCount] = useState(12);
+  const [currentPage, setCurrentPage] = useState(0);
 
   // Fetch books từ API
   const fetchBooks = async () => {
@@ -51,15 +52,25 @@ export default function SachPage() {
     ? books.filter((book) => book.genres.includes(selectedGenre))
     : books;
 
-  // Display only displayCount items
-  const displayedBooks = filteredBooks.slice(0, displayCount);
+  const totalPages = Math.ceil(filteredBooks.length / ITEMS_PER_PAGE);
+  const startIndex = currentPage * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const displayedBooks = filteredBooks.slice(startIndex, endIndex);
 
-  const handleLoadMore = () => {
-    setDisplayCount((prev) => prev + 6);
+  const handlePageClick = (page: number) => {
+    setCurrentPage(page);
   };
 
-  const handleShowLess = () => {
-    setDisplayCount(12);
+  const handlePrevious = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   // Collect all unique genres from books
@@ -120,30 +131,48 @@ export default function SachPage() {
             <BookGrid
               books={displayedBooks}
               type="sach"
-              title={`Hiển thị ${displayedBooks.length} / ${filteredBooks.length} cuốn sách`}
+              title={`Hiển thị ${startIndex + 1} - ${Math.min(endIndex, filteredBooks.length)} trong ${filteredBooks.length} cuốn sách`}
             />
             
-            {displayCount < filteredBooks.length && (
-              <div className="flex justify-center gap-4 py-8">
-                {displayCount > 12 && (
-                  <Button
-                    size="large"
-                    icon={<ArrowUpOutlined />}
-                    onClick={handleShowLess}
-                    className="border-blue-600 text-blue-600 hover:bg-blue-50"
+            {/* Pagination Buttons */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-8">
+                {/* Previous Button */}
+                {currentPage > 0 && (
+                  <button
+                    onClick={handlePrevious}
+                    className="px-3 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
                   >
-                    Trở về
-                  </Button>
+                    ←
+                  </button>
                 )}
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<DownloadOutlined />}
-                  onClick={handleLoadMore}
-                  className="bg-blue-600 hover:bg-blue-700 border-blue-600 hover:border-blue-700"
-                >
-                  Xem Thêm ({filteredBooks.length - displayCount} cuốn còn lại)
-                </Button>
+
+                {/* Page Numbers */}
+                <div className="flex gap-1">
+                  {Array.from({ length: totalPages }).map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handlePageClick(index)}
+                      className={`w-10 h-10 rounded flex items-center justify-center font-medium transition-colors ${
+                        index === currentPage
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Next Button */}
+                {currentPage < totalPages - 1 && (
+                  <button
+                    onClick={handleNext}
+                    className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                  >
+                    →
+                  </button>
+                )}
               </div>
             )}
           </>

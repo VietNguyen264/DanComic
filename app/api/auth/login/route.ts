@@ -17,7 +17,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
     const { email, password } = body;
 
     // Validate input
-    if (!email || !password) {
+    if (!email?.trim() || !password?.trim()) {
       return NextResponse.json(
         { success: false, isAdmin: false, message: 'Email và mật khẩu là bắt buộc' },
         { status: 400 }
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
     const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
     const adminPassword = process.env.ADMIN_PASSWORD;
 
-    // Check admin credentials
+    // Check admin credentials (strict)
     if (email === adminEmail && password === adminPassword) {
       return NextResponse.json(
         { success: true, isAdmin: true, message: 'Đăng nhập Admin thành công!' },
@@ -36,21 +36,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
       );
     }
 
-    // For now, allow any non-admin login
-    // In production, validate against your user database
-    if (email.includes('@')) {
-      return NextResponse.json(
-        { success: true, isAdmin: false, message: 'Đăng nhập thành công!' },
-        { status: 200 }
-      );
-    }
-
+    // Reject all other credentials
     return NextResponse.json(
       { success: false, isAdmin: false, message: 'Email hoặc mật khẩu không chính xác' },
       { status: 401 }
     );
   } catch (error) {
-    console.error('Login error:', error);
     return NextResponse.json(
       { success: false, isAdmin: false, message: 'Đăng nhập thất bại' },
       { status: 500 }

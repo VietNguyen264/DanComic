@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, Space, message, Card } from "antd";
-import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import bookService, { BookType } from "@/services/book/book.service";
@@ -16,7 +16,7 @@ export default function AdminBookPage() {
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const router = useRouter();
-  const { isAdmin } = useAuth();
+  const { isAdmin, adminEmail, adminPassword } = useAuth();
 
   // Kiểm tra quyền admin
   useEffect(() => {
@@ -47,13 +47,17 @@ export default function AdminBookPage() {
 
   // Thêm/Sửa sách
   const handleSubmit = async (values: any) => {
+    if (!adminEmail || !adminPassword) {
+      message.error("Admin credentials missing");
+      return;
+    }
     setLoading(true);
     try {
       if (editingId) {
-        await bookService.updateBook(editingId, values);
+        await bookService.updateBook(editingId, values, adminEmail, adminPassword);
         message.success("Cập nhật sách thành công");
       } else {
-        await bookService.addBook(values);
+        await bookService.addBook(values, adminEmail, adminPassword);
         message.success("Thêm sách thành công");
       }
       setIsModalVisible(false);
@@ -70,6 +74,10 @@ export default function AdminBookPage() {
 
   // Xóa sách
   const handleDelete = async (id: string) => {
+    if (!adminEmail || !adminPassword) {
+      message.error("Admin credentials missing");
+      return;
+    }
     Modal.confirm({
       title: "Xóa sách",
       content: "Bạn có chắc chắn muốn xóa sách này?",
@@ -78,7 +86,7 @@ export default function AdminBookPage() {
       okButtonProps: { danger: true },
       onOk: async () => {
         try {
-          await bookService.deleteBook(id);
+          await bookService.deleteBook(id, adminEmail, adminPassword);
           message.success("Xóa sách thành công");
           fetchBooks();
         } catch (error) {
@@ -145,8 +153,23 @@ export default function AdminBookPage() {
       title: "Mô tả",
       dataIndex: "bookDescription",
       key: "bookDescription",
-      width: 200,
-      ellipsis: true,
+      width: 150,
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (text: string) => (
+        <div
+          style={{
+            maxWidth: 150,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+          title={text}
+        >
+          {text}
+        </div>
+      ),
     },
     {
       title: "Hành động",
@@ -184,15 +207,25 @@ export default function AdminBookPage() {
               <h1 className="text-3xl font-bold text-white mb-2">Quản lý Sách</h1>
               <p className="text-gray-400">Thêm, sửa, xóa thông tin sách trong thư viện</p>
             </div>
-            <Button
-              type="primary"
-              size="large"
-              icon={<PlusOutlined />}
-              onClick={() => setIsModalVisible(true)}
-              className="bg-blue-600 hover:bg-blue-700 border-blue-600"
-            >
-              Thêm sách mới
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                icon={<ReloadOutlined />}
+                size="large"
+                onClick={fetchBooks}
+                loading={tableLoading}
+              >
+                Làm Mới
+              </Button>
+              <Button
+                type="primary"
+                size="large"
+                icon={<PlusOutlined />}
+                onClick={() => setIsModalVisible(true)}
+                className="bg-blue-600 hover:bg-blue-700 border-blue-600"
+              >
+                Thêm sách mới
+              </Button>
+            </div>
           </div>
         </Card>
 
@@ -226,7 +259,11 @@ export default function AdminBookPage() {
             <Form.Item
               name="bookName"
               label="Tên sách"
-              rules={[{ required: true, message: "Vui lòng nhập tên sách" }]}
+              rules={[
+                { required: true, message: "Vui lòng nhập tên sách" },
+                { min: 3, message: "Tên sách phải từ 3 ký tự" },
+                { max: 100, message: "Tên sách không vượt quá 100 ký tự" },
+              ]}
             >
               <Input placeholder="Nhập tên sách" />
             </Form.Item>
@@ -234,7 +271,10 @@ export default function AdminBookPage() {
             <Form.Item
               name="bookGenre"
               label="Thể loại"
-              rules={[{ required: true, message: "Vui lòng nhập thể loại" }]}
+              rules={[
+                { required: true, message: "Vui lòng nhập thể loại" },
+                { min: 2, message: "Thể loại phải từ 2 ký tự" },
+              ]}
             >
               <Input placeholder="Ví dụ: Kiếm hiệp, Lãng mạn..." />
             </Form.Item>
@@ -242,32 +282,45 @@ export default function AdminBookPage() {
             <Form.Item
               name="bookPrice"
               label="Giá"
-              rules={[{ required: true, message: "Vui lòng nhập giá" }]}
+              rules={[
+                { required: true, message: "Vui lòng nhập giá" },
+                { pattern: /^[0-9]+$/, message: "Giá phải là số" },
+                { min: 1, message: "Giá phải lớn hơn 0" },
+              ]}
             >
-              <Input placeholder="Nhập giá sách" />
+              <Input placeholder="Nhập giá sách" type="number" />
             </Form.Item>
 
             <Form.Item
               name="bookDescription"
               label="Mô tả"
-              rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
+              rules={[
+                { required: true, message: "Vui lòng nhập mô tả" },
+                { min: 10, message: "Mô tả phải từ 10 ký tự" },
+              ]}
             >
               <Input.TextArea
                 placeholder="Nhập mô tả chi tiết về sách"
                 rows={4}
+                maxLength={500}
                 style={{
                   wordWrap: "break-word",
                   whiteSpace: "pre-wrap",
                   overflowWrap: "break-word",
                 }}
-                className="break-words"
               />
             </Form.Item>
 
             <Form.Item
               name="bookCover"
               label="URL ảnh bìa"
-              rules={[{ required: true, message: "Vui lòng nhập URL ảnh bìa" }]}
+              rules={[
+                { required: true, message: "Vui lòng nhập URL ảnh bìa" },
+                { 
+                  pattern: /^https?:\/\/.+/, 
+                  message: "URL phải bắt đầu bằng http:// hoặc https://" 
+                },
+              ]}
             >
               <Input placeholder="https://example.com/image.jpg" />
             </Form.Item>

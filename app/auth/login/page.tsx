@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const router = useRouter();
-  const { setIsAdmin } = useAuth();
+  const { setIsAdmin, setAdminCredentials } = useAuth();
 
   const onFinish = async (values: LoginValues) => {
     setLoading(true);
@@ -38,6 +38,9 @@ export default function LoginPage() {
 
       if (response.ok && data.success) {
         setIsAdmin(data.isAdmin);
+        if (data.isAdmin) {
+          setAdminCredentials(values.email, values.password);
+        }
         message.success(data.message);
         // Redirect based on role
         router.push(data.isAdmin ? '/admin' : '/');

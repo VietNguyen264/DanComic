@@ -35,18 +35,50 @@ const bookService = {
     return response.data;
   },
 
-  addBook: async (bookPayload: CreateBookType): Promise<BookType> => {
-    const response = await axiosInstance.post("book", bookPayload);
-    return response.data;
+  addBook: async (bookPayload: CreateBookType, email?: string, password?: string): Promise<BookType> => {
+    if (!email || !password) {
+      throw new Error('Admin credentials required');
+    }
+    const response = await fetch('/api/books/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...bookPayload, email, password }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to add book');
+    }
+    const result = await response.json();
+    return result.data;
   },
 
-  updateBook: async (id: string, bookPayload: UpdateBookType): Promise<BookType> => {
-    const response = await axiosInstance.put(`book/${id}`, bookPayload);
-    return response.data;
+  updateBook: async (id: string, bookPayload: UpdateBookType, email?: string, password?: string): Promise<BookType> => {
+    if (!email || !password) {
+      throw new Error('Admin credentials required');
+    }
+    const response = await fetch('/api/books/update', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, ...bookPayload, email, password }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to update book');
+    }
+    const result = await response.json();
+    return result.data;
   },
 
-  deleteBook: async (id: string): Promise<void> => {
-    await axiosInstance.delete(`book/${id}`);
+  deleteBook: async (id: string, email?: string, password?: string): Promise<void> => {
+    if (!email || !password) {
+      throw new Error('Admin credentials required');
+    }
+    const response = await fetch('/api/books/delete', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, email, password }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete book');
+    }
   },
 };
 

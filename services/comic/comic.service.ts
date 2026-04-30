@@ -35,18 +35,50 @@ const comicService = {
     return response.data;
   },
 
-  addComic: async (comicPayload: CreateComicType): Promise<ComicType> => {
-    const response = await axiosInstance.post("comic", comicPayload);
-    return response.data;
+  addComic: async (comicPayload: CreateComicType, email?: string, password?: string): Promise<ComicType> => {
+    if (!email || !password) {
+      throw new Error('Admin credentials required');
+    }
+    const response = await fetch('/api/comics/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...comicPayload, email, password }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to add comic');
+    }
+    const result = await response.json();
+    return result.data;
   },
 
-  updateComic: async (id: string, comicPayload: UpdateComicType): Promise<ComicType> => {
-    const response = await axiosInstance.put(`comic/${id}`, comicPayload);
-    return response.data;
+  updateComic: async (id: string, comicPayload: UpdateComicType, email?: string, password?: string): Promise<ComicType> => {
+    if (!email || !password) {
+      throw new Error('Admin credentials required');
+    }
+    const response = await fetch('/api/comics/update', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, ...comicPayload, email, password }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to update comic');
+    }
+    const result = await response.json();
+    return result.data;
   },
 
-  deleteComic: async (id: string): Promise<void> => {
-    await axiosInstance.delete(`comic/${id}`);
+  deleteComic: async (id: string, email?: string, password?: string): Promise<void> => {
+    if (!email || !password) {
+      throw new Error('Admin credentials required');
+    }
+    const response = await fetch('/api/comics/delete', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, email, password }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete comic');
+    }
   },
 };
 

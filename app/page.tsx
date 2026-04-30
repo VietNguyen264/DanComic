@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import PaginatedBookGrid from "@/components/PaginatedBookGrid";
 import { Tabs, Button, Spin } from "antd";
-import { ReloadOutlined, SettingOutlined } from "@ant-design/icons";
+import { SettingOutlined } from "@ant-design/icons";
 import { useAuth } from "@/context/auth";
 import Link from "next/link";
 import bookService from "@/services/book/book.service";
@@ -15,12 +15,10 @@ export default function Home() {
   const [books, setBooks] = useState<any[]>([]);
   const [comics, setComics] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
   const fetchData = async (isRefresh = false) => {
     try {
-      if (isRefresh) setRefreshing(true);
-      else setLoading(true);
+      if (!isRefresh) setLoading(true);
       
       const [booksData, comicsData] = await Promise.all([
         bookService.getAllBooks(),
@@ -61,7 +59,6 @@ export default function Home() {
       setComics([]);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   };
 
@@ -108,7 +105,7 @@ export default function Home() {
             <PaginatedBookGrid
               books={[...comics].sort((a, b) => (b.rating || 0) - (a.rating || 0))}
               type="truyen"
-              title="⭐ Truyện Hay Nhất"
+              title="⭐ Truyện Top đầu"
             />
           )}
           {comics.length === 0 && <div className="text-center text-gray-400 py-12">Không có dữ liệu</div>}
@@ -154,14 +151,6 @@ export default function Home() {
               Khám phá hàng ngàn truyện tranh và sách truyện từ khắp nơi trên thế giới
             </p>
           </div>
-          <Button
-            icon={<ReloadOutlined spin={refreshing} />}
-            onClick={() => fetchData(true)}
-            loading={refreshing}
-            className="bg-red-700 border-none text-white hover:bg-red-800"
-          >
-            Làm mới
-          </Button>
         </div>
       </div>
 

@@ -1,10 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 
 interface AuthContextType {
   isAdmin: boolean;
   setIsAdmin: (value: boolean) => void;
+  adminEmail: string | null;
+  adminPassword: string | null;
+  setAdminCredentials: (email: string, password: string) => void;
   isLoaded: boolean;
   logout: () => void;
 }
@@ -13,29 +16,33 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [adminEmail, setAdminEmail] = useState<string | null>(null);
+  const [adminPassword, setAdminPassword] = useState<string | null>(null);
+  const [isLoaded] = useState(true);
 
-  // Load auth state từ localStorage
-  useEffect(() => {
-    const savedAdmin = localStorage.getItem("isAdmin") === "true";
-    setIsAdmin(savedAdmin);
-    setIsLoaded(true);
-  }, []);
-
-  // Save auth state vào localStorage khi thay đổi
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem("isAdmin", isAdmin.toString());
-    }
-  }, [isAdmin, isLoaded]);
+  const setAdminCredentials = (email: string, password: string) => {
+    setAdminEmail(email);
+    setAdminPassword(password);
+  };
 
   const logout = () => {
     setIsAdmin(false);
-    localStorage.removeItem("isAdmin");
+    setAdminEmail(null);
+    setAdminPassword(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAdmin, setIsAdmin, logout, isLoaded }}>
+    <AuthContext.Provider 
+      value={{ 
+        isAdmin, 
+        setIsAdmin, 
+        adminEmail,
+        adminPassword,
+        setAdminCredentials,
+        logout, 
+        isLoaded 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

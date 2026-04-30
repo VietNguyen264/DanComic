@@ -10,6 +10,7 @@ import {
   BarChartOutlined,
   UserOutlined,
   LogoutOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "@/context/auth";
 import bookService from "@/services/book/book.service";
@@ -43,12 +44,10 @@ export default function AdminDashboard() {
     }
   };
 
-  // Load stats on mount and auto-refresh every 5 seconds
+  // Load stats on mount only (no auto-refresh polling)
   useEffect(() => {
     if (isAdmin) {
       fetchStats();
-      const interval = setInterval(fetchStats, 5000);
-      return () => clearInterval(interval);
     }
   }, [isAdmin]);
 
@@ -71,14 +70,23 @@ export default function AdminDashboard() {
             <h1 className="text-4xl font-bold text-white mb-2">Admin Dashboard</h1>
             <p className="text-gray-400">Quản lý sách, truyện và nội dung DanComic</p>
           </div>
-          <Button
-            danger
-            icon={<LogoutOutlined />}
-            size="large"
-            onClick={handleLogout}
-          >
-            Đăng xuất
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              icon={<ReloadOutlined />}
+              size="large"
+              onClick={fetchStats}
+            >
+              Làm Mới
+            </Button>
+            <Button
+              danger
+              icon={<LogoutOutlined />}
+              size="large"
+              onClick={handleLogout}
+            >
+              Đăng xuất
+            </Button>
+          </div>
         </div>
 
         {/* Stats Grid */}
