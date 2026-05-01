@@ -314,13 +314,7 @@ export default function AdminBookPage() {
             <Form.Item
               name="bookCover"
               label="URL ảnh bìa"
-              rules={[
-                { required: true, message: "Vui lòng nhập URL ảnh bìa" },
-                { 
-                  pattern: /^https?:\/\/.+/, 
-                  message: "URL phải bắt đầu bằng http:// hoặc https://" 
-                },
-              ]}
+              rules={[{ required: true, message: "Vui lòng nhập URL ảnh bìa" }]}
             >
               <Input placeholder="https://example.com/image.jpg" />
             </Form.Item>

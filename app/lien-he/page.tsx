@@ -11,8 +11,6 @@ export default function LienHePage() {
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      // Simulate sending contact form
-      console.log("Contact form submitted:", values);
       message.success("Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.");
       form.resetFields();
     } catch (error) {

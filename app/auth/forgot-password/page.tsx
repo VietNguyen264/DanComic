@@ -14,8 +14,6 @@ export default function ForgotPasswordPage() {
   const handleStep1 = async (values: any) => {
     setLoading(true);
     try {
-      // Simulate sending verification code
-      console.log("Sending code to:", values.email);
       message.success("ĐÃ GỬI XÁC NHẬN VỀ MAIL");
       setEmail(values.email);
       setStep(1);
@@ -29,8 +27,6 @@ export default function ForgotPasswordPage() {
   const handleStep2 = async (values: any) => {
     setLoading(true);
     try {
-      // Simulate password reset
-      console.log("Reset password for:", email);
       message.success("Mật khẩu đã được cập nhật thành công!");
       setStep(2);
     } catch (error) {

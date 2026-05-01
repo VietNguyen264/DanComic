@@ -12,10 +12,7 @@ export default function RegisterPage() {
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      // Simulate API call
-      console.log("Register attempt:", values);
       message.success("Đăng ký thành công! Vui lòng đăng nhập.");
-      // In a real app, you would redirect to login page
     } catch (error) {
       message.error("Đăng ký thất bại!");
     } finally {

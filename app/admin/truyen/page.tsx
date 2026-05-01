@@ -329,13 +329,7 @@ export default function AdminComicPage() {
             <Form.Item
               name="comicCover"
               label="URL ảnh bìa"
-              rules={[
-                { required: true, message: "Vui lòng nhập URL ảnh bìa" },
-                { 
-                  pattern: /^https?:\/\/.+/, 
-                  message: "URL phải bắt đầu bằng http:// hoặc https://" 
-                },
-              ]}
+              rules={[{ required: true, message: "Vui lòng nhập URL ảnh bìa" }]}
             >
               <Input placeholder="https://example.com/image.jpg" />
             </Form.Item>

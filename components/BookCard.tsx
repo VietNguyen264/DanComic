@@ -57,13 +57,15 @@ export default function BookCard({
       <div className="flex-1 flex flex-col justify-between">
         {/* Header */}
         <div>
-          <p
-            className={`text-sm font-semibold ${
-              isDark ? "text-gray-400" : "text-gray-600"
-            } mb-1`}
-          >
-            {chapter} Chương
-          </p>
+          {type === "truyen" && (
+            <p
+              className={`text-sm font-semibold ${
+                isDark ? "text-gray-400" : "text-gray-600"
+              } mb-1`}
+            >
+              {chapter} Chương
+            </p>
+          )}
 
           <h3
             className={`text-lg font-bold mb-2 ${
