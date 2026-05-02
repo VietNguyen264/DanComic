@@ -1,5 +1,12 @@
 import axiosInstance from "@/utils/axios";
 
+// Simple cache mechanism
+const bookCache = {
+  data: null as any,
+  timestamp: 0,
+  duration: 30000, // 30 seconds cache
+};
+
 export type BookType = {
   bookId: string;
   bookName: string;
@@ -31,7 +38,15 @@ export type UpdateBookType = {
 const bookService = {
 
   getAllBooks: async (): Promise<BookType[]> => {
+    const now = Date.now();
+    // Return cached data if still valid
+    if (bookCache.data && now - bookCache.timestamp < bookCache.duration) {
+      return bookCache.data;
+    }
+    // Fetch new data and update cache
     const response = await axiosInstance.get("book");
+    bookCache.data = response.data;
+    bookCache.timestamp = now;
     return response.data;
   },
 

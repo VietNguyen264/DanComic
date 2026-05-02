@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
 import { Button } from "antd";
 import { StarFilled, EyeOutlined, HeartOutlined } from "@ant-design/icons";
@@ -19,7 +20,7 @@ interface BookCardProps {
   bookPrice?: string | number;
 }
 
-export default function BookCard({
+function BookCard({
   id,
   bookName,
   bookCover,
@@ -138,3 +139,5 @@ export default function BookCard({
     </div>
   );
 }
+
+export default React.memo(BookCard);

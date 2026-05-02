@@ -1,5 +1,12 @@
 import axiosInstance from "@/utils/axios";
 
+// Simple cache mechanism
+const comicCache = {
+  data: null as any,
+  timestamp: 0,
+  duration: 30000, // 30 seconds cache
+};
+
 export type ComicType = {
   id: string;
   comicName: string;
@@ -31,7 +38,15 @@ export type UpdateComicType = {
 const comicService = {
 
   getAllComics: async (): Promise<ComicType[]> => {
+    const now = Date.now();
+    // Return cached data if still valid
+    if (comicCache.data && now - comicCache.timestamp < comicCache.duration) {
+      return comicCache.data;
+    }
+    // Fetch new data and update cache
     const response = await axiosInstance.get("comic");
+    comicCache.data = response.data;
+    comicCache.timestamp = now;
     return response.data;
   },
 

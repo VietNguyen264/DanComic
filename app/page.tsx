@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import PaginatedBookGrid from "@/components/PaginatedBookGrid";
 import { Tabs, Button, Spin } from "antd";
-import { ReloadOutlined, SettingOutlined } from "@ant-design/icons";
+import { SettingOutlined } from "@ant-design/icons";
 import { useAuth } from "@/context/auth";
 import Link from "next/link";
 import bookService from "@/services/book/book.service";
@@ -15,12 +15,10 @@ export default function Home() {
   const [books, setBooks] = useState<any[]>([]);
   const [comics, setComics] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
-  const fetchData = async (isRefresh = false) => {
+  const fetchData = async () => {
     try {
-      if (isRefresh) setRefreshing(true);
-      else setLoading(true);
+      setLoading(true);
       
       const [booksData, comicsData] = await Promise.all([
         bookService.getAllBooks(),
@@ -61,17 +59,16 @@ export default function Home() {
       setComics([]);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   };
 
   useEffect(() => {
     fetchData();
     
-    // Auto-refresh data mỗi 5 giây để sync khi admin thêm/sửa/xóa
+    // Auto-refresh data mỗi 30 giây để sync khi admin thêm/sửa/xóa
     const interval = setInterval(() => {
-      fetchData(true);
-    }, 5000);
+      fetchData();
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);
@@ -146,22 +143,12 @@ export default function Home() {
       )}
 
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-red-600 to-red-800 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Chào mừng đến DanComic</h1>
-            <p className="text-lg text-red-100">
-              Khám phá hàng ngàn truyện tranh và sách truyện từ khắp nơi trên thế giới
-            </p>
-          </div>
-          <Button
-            icon={<ReloadOutlined spin={refreshing} />}
-            onClick={() => fetchData(true)}
-            loading={refreshing}
-            className="bg-red-700 border-none text-white hover:bg-red-800"
-          >
-            Làm mới
-          </Button>
+      <div className="bg-linear-to-r from-red-600 to-red-800 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-4xl font-bold mb-2">Chào mừng đến DanComic</h1>
+          <p className="text-lg text-red-100">
+            Khám phá hàng nghìn truyện tranh và sách truyện từ khắp nơi trên thế giới
+          </p>
         </div>
       </div>
 
