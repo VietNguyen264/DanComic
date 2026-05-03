@@ -64,13 +64,6 @@ export default function Home() {
 
   useEffect(() => {
     fetchData();
-    
-    // Auto-refresh data mỗi 30 giây để sync khi admin thêm/sửa/xóa
-    const interval = setInterval(() => {
-      fetchData();
-    }, 30000);
-
-    return () => clearInterval(interval);
   }, []);
 
   const tabItems = [
