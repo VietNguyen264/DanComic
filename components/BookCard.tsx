@@ -7,7 +7,7 @@ import { StarFilled, EyeOutlined, HeartOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 
 interface BookCardProps {
-  id: number;
+  id: string | number;
   bookName: string;
   bookCover: string;
   chapter: number;
@@ -129,7 +129,12 @@ function BookCard({
           <Button
             type="primary"
             danger
-            onClick={() => router.push(`/${type}/${id}`)}
+            onClick={() => {
+              const path = type === "truyen" 
+                ? `/danh-sach/truyen/${id}` 
+                : `/danh-sach/sach/${id}`;
+              router.push(path);
+            }}
             className="w-full font-semibold"
           >
             {type === "truyen" ? "ĐỌC TRUYỆN" : "XEM SẢN PHẨM"}

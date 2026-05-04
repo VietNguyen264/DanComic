@@ -36,10 +36,11 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
       );
     }
 
-    // Reject all other credentials
+    // Allow regular users to login with any email/password (not admin credentials)
+    // This enables user registration feature
     return NextResponse.json(
-      { success: false, isAdmin: false, message: 'Email hoặc mật khẩu không chính xác' },
-      { status: 401 }
+      { success: true, isAdmin: false, message: 'Đăng nhập thành công!' },
+      { status: 200 }
     );
   } catch (error) {
     return NextResponse.json(

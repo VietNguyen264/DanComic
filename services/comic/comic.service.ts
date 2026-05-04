@@ -14,6 +14,9 @@ export type ComicType = {
   comicDescription: string;
   comicAuthor: string;
   comicGenre: string;
+  views?: number;
+  followers?: number;
+  rating?: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -48,6 +51,16 @@ const comicService = {
     comicCache.data = response.data;
     comicCache.timestamp = now;
     return response.data;
+  },
+
+  getComicById: async (id: string): Promise<ComicType | null> => {
+    try {
+      const response = await axiosInstance.get(`comic/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch comic:', error);
+      return null;
+    }
   },
 
   addComic: async (comicPayload: CreateComicType, email?: string, password?: string): Promise<ComicType> => {

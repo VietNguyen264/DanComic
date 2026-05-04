@@ -50,6 +50,16 @@ const bookService = {
     return response.data;
   },
 
+  getBookById: async (id: string): Promise<BookType | null> => {
+    try {
+      const response = await axiosInstance.get(`book/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch book:', error);
+      return null;
+    }
+  },
+
   addBook: async (bookPayload: CreateBookType, email?: string, password?: string): Promise<BookType> => {
     if (!email || !password) {
       throw new Error('Admin credentials required');

@@ -2,13 +2,22 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, Dropdown } from "antd";
-import { UserOutlined, MenuOutlined, CloseOutlined, LogoutOutlined, DashboardOutlined } from "@ant-design/icons";
+import { Menu, Dropdown, Badge } from "antd";
+import { UserOutlined, MenuOutlined, CloseOutlined, LogoutOutlined, DashboardOutlined, ShoppingCartOutlined, BookOutlined } from "@ant-design/icons";
 import { useAuth } from "@/context/auth";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isAdmin, logout } = useAuth();
+  const { isAdmin, isLoggedIn, userName, logout } = useAuth();
+
+  // Get bookmarks count from localStorage
+  const [bookmarksCount] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "{}");
+      return Object.keys(bookmarks).length;
+    }
+    return 0;
+  });
 
   const danh_sachMenuItems = [
     {
@@ -27,6 +36,24 @@ export default function Navbar() {
           key: "admin",
           icon: <DashboardOutlined />,
           label: <Link href="/admin">Dashboard Admin</Link>,
+        },
+        {
+          key: "logout",
+          icon: <LogoutOutlined />,
+          label: <span onClick={logout}>Đăng xuất</span>,
+        },
+      ]
+    : isLoggedIn && userName
+    ? [
+        {
+          key: "cart",
+          icon: <ShoppingCartOutlined />,
+          label: <Link href="/">Giỏ hàng</Link>,
+        },
+        {
+          key: "bookmarks",
+          icon: <BookOutlined />,
+          label: <Link href="/">Truyện đã theo dõi ({bookmarksCount})</Link>,
         },
         {
           key: "logout",
@@ -91,7 +118,7 @@ export default function Navbar() {
                 className="flex items-center gap-2 hover:text-red-600 transition-colors cursor-pointer"
               >
                 <UserOutlined />
-                {isAdmin ? "Tài khoản" : "Đăng nhập"}
+                {isLoggedIn && userName ? userName : isAdmin ? "Tài khoản" : "Đăng nhập"}
               </a>
             </Dropdown>
           </div>
@@ -132,6 +159,7 @@ export default function Navbar() {
             >
               Liên hệ
             </Link>
+            
             {isAdmin && (
               <>
                 <Link
@@ -148,7 +176,34 @@ export default function Navbar() {
                 </button>
               </>
             )}
-            {!isAdmin && (
+            
+            {isLoggedIn && userName && (
+              <>
+                <div className="border-t border-gray-700 pt-2 mt-2">
+                  <p className="text-gray-400 text-sm py-2">Tài khoản: {userName}</p>
+                  <Link
+                    href="/"
+                    className="block hover:text-red-600 transition-colors py-2"
+                  >
+                    Giỏ hàng
+                  </Link>
+                  <Link
+                    href="/"
+                    className="block hover:text-red-600 transition-colors py-2"
+                  >
+                    Truyện đã theo dõi ({bookmarksCount})
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="block w-full text-left hover:text-red-600 transition-colors py-2"
+                  >
+                    Đăng xuất
+                  </button>
+                </div>
+              </>
+            )}
+            
+            {!isAdmin && !isLoggedIn && (
               <Link
                 href="/auth/login"
                 className="block hover:text-red-600 transition-colors py-2"

@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const router = useRouter();
-  const { setIsAdmin, setAdminCredentials } = useAuth();
+  const { setIsAdmin, setIsLoggedIn, setAdminCredentials, setUserInfo } = useAuth();
 
   const onFinish = async (values: LoginValues) => {
     setLoading(true);
@@ -37,13 +37,26 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok && data.success) {
+        setIsLoggedIn(true);
         setIsAdmin(data.isAdmin);
+        
         if (data.isAdmin) {
           setAdminCredentials(values.email, values.password);
+          message.success(data.message);
+          router.push('/admin');
+        } else {
+          // Regular user - load username from localStorage
+          const userDataStr = localStorage.getItem(`user_${values.email}`);
+          if (userDataStr) {
+            const userData = JSON.parse(userDataStr);
+            setUserInfo(userData.username, values.email);
+          } else {
+            // Fallback: use email as username if no saved data
+            setUserInfo(values.email.split('@')[0], values.email);
+          }
+          message.success(data.message);
+          router.push('/');
         }
-        message.success(data.message);
-        // Redirect based on role
-        router.push(data.isAdmin ? '/admin' : '/');
       } else {
         message.error(data.message || 'Đăng nhập thất bại!');
         form.resetFields(['password']);
@@ -71,7 +84,7 @@ export default function LoginPage() {
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: "Vui lòng nhập email hoặc số điện thoại" },
+              { required: true, message: "Vui lòng nhập email" },
               {
                 pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                 message: "Email không hợp lệ",
@@ -80,7 +93,7 @@ export default function LoginPage() {
           >
             <Input
               prefix={<MailOutlined />}
-              placeholder="Email hoặc số điện thoại"
+              placeholder="Email"
               size="large"
               className="bg-gray-700 border-gray-600 text-white"
               disabled={loading}

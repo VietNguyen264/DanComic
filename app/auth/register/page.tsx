@@ -3,16 +3,31 @@
 import { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MailOutlined, LockOutlined, UserOutlined, PhoneOutlined } from "@ant-design/icons";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const router = useRouter();
 
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      message.success("Đăng ký thành công! Vui lòng đăng nhập.");
+      // Save user info to localStorage for now (until real database is ready)
+      const userData = {
+        username: values.username,
+        email: values.email,
+        phone: values.phone,
+        fullname: values.fullname,
+      };
+      localStorage.setItem(`user_${values.email}`, JSON.stringify(userData));
+      
+      message.success("Đăng ký thành công! Đang chuyển hướng...");
+      // Redirect to login page after 1.5 seconds
+      setTimeout(() => {
+        router.push("/auth/login");
+      }, 1500);
     } catch (error) {
       message.error("Đăng ký thất bại!");
     } finally {
