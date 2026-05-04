@@ -38,16 +38,16 @@ export default function ForgotPasswordPage() {
 
   const steps = [
     {
-      title: "Xác nhận Email",
-      content: "Nhập email của bạn",
+      title: <span className="text-green-400">Xác nhận Email</span>,
+      content: <span className="text-gray-300">Nhập email của bạn</span>,
     },
     {
-      title: "Đặt lại Mật khẩu",
-      content: "Nhập mật khẩu mới",
+      title: <span className="text-green-400">Đặt lại Mật khẩu</span>,
+      content: <span className="text-gray-300">Nhập mật khẩu mới</span>,
     },
     {
-      title: "Hoàn tất",
-      content: "Mật khẩu đã được cập nhật",
+      title: <span className="text-green-400">Hoàn tất</span>,
+      content: <span className="text-gray-300">Mật khẩu đã được cập nhật</span>,
     },
   ];
 
