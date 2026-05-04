@@ -19,6 +19,15 @@ export default function Navbar() {
     return 0;
   });
 
+  // Get cart count from localStorage
+  const [cartCount] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const cart = JSON.parse(localStorage.getItem("cart") || "{}");
+      return Object.keys(cart).length;
+    }
+    return 0;
+  });
+
   const danh_sachMenuItems = [
     {
       key: "sach",
@@ -48,12 +57,12 @@ export default function Navbar() {
         {
           key: "cart",
           icon: <ShoppingCartOutlined />,
-          label: <Link href="/">Giỏ hàng</Link>,
+          label: <Link href="/gio-hang">Giỏ hàng</Link>,
         },
         {
           key: "bookmarks",
           icon: <BookOutlined />,
-          label: <Link href="/">Truyện đã theo dõi ({bookmarksCount})</Link>,
+          label: <Link href="/theo-doi/truyen">Truyện đã theo dõi</Link>,
         },
         {
           key: "logout",
@@ -182,16 +191,16 @@ export default function Navbar() {
                 <div className="border-t border-gray-700 pt-2 mt-2">
                   <p className="text-gray-400 text-sm py-2">Tài khoản: {userName}</p>
                   <Link
-                    href="/"
+                    href="/gio-hang"
                     className="block hover:text-red-600 transition-colors py-2"
                   >
                     Giỏ hàng
                   </Link>
                   <Link
-                    href="/"
+                    href="/theo-doi/truyen"
                     className="block hover:text-red-600 transition-colors py-2"
                   >
-                    Truyện đã theo dõi ({bookmarksCount})
+                    Truyện đã theo dõi
                   </Link>
                   <button
                     onClick={logout}

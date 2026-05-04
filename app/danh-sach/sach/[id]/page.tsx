@@ -7,10 +7,12 @@ import Link from "next/link";
 import Image from "next/image";
 import bookService, { BookType } from "@/services/book/book.service";
 import { useParams } from "next/navigation";
+import { useAuth } from "@/context/auth";
 
 export default function BookDetailPage() {
   const params = useParams();
   const bookId = params.id as string;
+  const { isLoggedIn } = useAuth();
   const [book, setBook] = useState<BookType | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -39,7 +41,23 @@ export default function BookDetailPage() {
   }, [bookId]);
 
   const handleAddToCart = () => {
+    if (!isLoggedIn) {
+      message.warning("Vui lòng đăng nhập để thêm vào giỏ hàng");
+      return;
+    }
+
     if (quantity > 0) {
+      const cart = JSON.parse(localStorage.getItem("cart") || "{}");
+      if (cart[bookId]) {
+        cart[bookId].quantity += quantity;
+      } else {
+        cart[bookId] = {
+          bookId: bookId,
+          quantity: quantity,
+          addedDate: new Date().toISOString(),
+        };
+      }
+      localStorage.setItem("cart", JSON.stringify(cart));
       message.success(`Đã thêm ${quantity} cuốn sách vào giỏ hàng`);
       setQuantity(1);
     }
