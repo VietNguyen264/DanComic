@@ -1,0 +1,13 @@
+# Vercel Build Optimization
+.git
+.gitignore
+README.md
+CLAUDE.md
+AGENTS.md
+BAO_CAO_DAN_COMIC_SIMPLE.txt
+*.md
+.next/cache
+node_modules/.cache
+.env.local
+.env.*.local
+.DS_Store
